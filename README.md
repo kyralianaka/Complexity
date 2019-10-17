@@ -16,7 +16,7 @@ distance matrix of multiple sequences.
 
 To calculate the normalized compression distance of sequences, different compressors
 may be used. The compressors supported by NCD.py include gzip, bzip, snappy, ppm
-(prediction by partial matching algorithm developed by [Nayuki](github.com/nayuki/Reference-arithmetic-coding)), ppmc, and the LZ Complexity itself substituted for
+(prediction by partial matching algorithm developed by [Nayuki](https://github.com/nayuki/Reference-arithmetic-coding)), ppmc, and the LZ Complexity itself substituted for
 the compression value.
 
 ## Installation
