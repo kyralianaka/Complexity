@@ -16,7 +16,7 @@ distance matrix of multiple sequences.
 
 To calculate the normalized compression distance of sequences, different compressors
 may be used. The compressors supported by NCD.py include gzip, bzip, snappy, ppm
-(prediction by partial matching), ppmc, and the LZ Complexity itself substituted for
+(prediction by partial matching algorithm developed by [Nayuki](github.com/nayuki/Reference-arithmetic-coding)), ppmc, and the LZ Complexity itself substituted for
 the compression value.
 
 ## Installation
@@ -37,7 +37,7 @@ pip install .
 
 To calculate the Lempel-Ziv Complexity of a sequence using the C extension:
 ```python
-from complexity.lzc import lz_complexity
+from complexity.lzc.lzc import lz_complexity
 lz_complexity([1,0,1,0,0]) # returns 3
 ```
 

@@ -8,9 +8,10 @@ The original script can be found here: https://github.com/xunzheng/ppm, but it
 has been heavily modified. The most significant changes are described below.
     - The functions were organized into a class to reinitiate the frequency table 
       for each new instance of a class (each sequence needs to be its own object).
-    - The -1 order context of the table only includes '1' and '0' (not the whole
-      ascii table needed for text encoding). This has dramatically increased the 
-      compression ratio, understandably. 
+    - The -1 order context of the table can include only '1' and '0' (not the whole
+      ascii table needed for text encoding): this edit is commented and dramatically
+      reduces the compression ratio but at the expense of a lower identity "score" 
+      when used in the NCD formula
     - The script has been made functional in python 3.
     - The "impossible" table (whatever that is) has been initiated in the predict
       function to fix a bug.
