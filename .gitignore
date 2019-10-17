@@ -1,0 +1,10 @@
+.vs/
+__pycache__/
+Debug/
+x64/
+*.so
+*.dll
+*.suo
+*.user
+*.filters
+*.pyc
