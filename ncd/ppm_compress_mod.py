@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-
-# Attempting to use the Nayuki project code.
-# Modifying the ppm_compress file for my purposes.
-
-#
 # Compression application using prediction by partial matching (PPM) with arithmetic coding
 #
 # Note that both the compressor and decompressor need to use the same PPM context modeling logic.

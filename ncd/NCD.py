@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Jul 30 13:47:27 2019
-
-@author: kyra
-"""
-
 import gzip, bz2
 import snappy
 from complexity.ncd import ppm_compress_mod, ppmc

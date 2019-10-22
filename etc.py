@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Mar  3 19:54:35 2019
-
-@author: Kyra Kadhim
-"""
 from numpy import unique,array
 from collections import defaultdict
 from .utilities import *

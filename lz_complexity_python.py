@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Jun 26 11:39:16 2019
-
-"""
-
 def lz_complexity(s):
     '''
     Lempel-Ziv complexity as described in Kaspar and Schuster, Phys. Rev. A.

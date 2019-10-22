@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Jun 26 11:41:16 2019
-
-"""
 from distutils.core import setup,Command
 from distutils.extension import Extension
 import setuptools,platform,os
