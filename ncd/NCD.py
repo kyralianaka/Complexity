@@ -1,34 +1,19 @@
 import gzip, bz2
 import snappy
 from complexity.ncd import ppm_compress_mod, ppmc
+from complexity.ncd import arithmeticcoding, ppmmodel
 from complexity.lzc import lzc
 import contextlib, sys, os
-from complexity.ncd import arithmeticcoding, ppmmodel
+import scipy.cluster.hierarchy as hier
 import numpy as np
 import matplotlib.pyplot as plt
 import pylab
-
-'''
-This function will calculate the normalized compression distance matrix
-of a spike array which can be plotted to analyze structure in a network.
-
-    INPUT: spike array, numpy int array of arrays
-           compressor: gzip, 'gzip_padded', bz2, 'ppm', or snappy
-
-    OUTPUT: hmap, numpy float32 array of arrays
-
-'''
 
 def NCD(spike_array,compressor):
     '''
     Generates the normalized compression distance matrix of a spike array.
 
         INPUT: spike_array, numpy array of arrays; compressor
-            Note: The best compressor to be used in this function with
-            spike array data has been found to be gzip, and the compressor
-            achieves most idempotency when each sequence is cast as np.uint8s
-            and padded such that the length of the sequences are close to the
-            window size (32768 bits).
 
         OUTPUT: hmap, numpy array of arrays
     '''
@@ -129,9 +114,6 @@ def NCD_pairwise(s1,s2, compressor):
         '''
     return NCD
 
-#x = np.random.binomial(1,0.5,200)
-#score = NCD_pairwise(x,x,'ppmc')
-
 def clen(x, compressor):
     '''
     Determines the compressed length of a sequence in bits using the compressor
@@ -151,20 +133,32 @@ def clen(x, compressor):
         clen = xobj.compress()
     return clen
 
+def NCD_clusters(NCD_mat):
+    #Get upper triangle as list
+    dmat_condensed = NCD_mat[np.triu_indices(NCD_mat.shape[0],k=1)]
+    #Linkage matrix
+    link_mat = hier.linkage(dmat_condensed,method='average')
+    #Compute the dendrogram
+    dendro = hier.dendrogram(link_mat,no_plot=True)
+    #Row ordering according to the dendrogram
+    leaves = dendro['leaves']
+    #Create ordered matrix
+    new_mat = NCD_mat[leaves,:]
+    new_mat = new_mat[:,leaves]   
+    return new_mat
+
 
 if __name__ == '__main__':
     '''
-    pylab_pretty_plot()
+    #Testing
+    
+    sarr = np.random.binomial(1,0.5,size=(16,2000))
 
-    pickle_in = open('toynet','rb')
-    toy_net = pickle.load(pickle_in)
-    pickle_in.close()
-
-    hm = NCD(toy_net)
-    im = plt.imshow(hm, cmap='hot', interpolation='none')
-    r = np.arange(8)
-    plt.xticks(r, r.astype(str))
+    mat = NCD(sarr,'lz')
+    hm = NCD_clusters(mat)
+    im = plt.matshow(hm,cmap='GnBu')
     plt.colorbar(im)
+    plt.show()
 
     x = np.random.binomial(1,0.5,1000)
     xstr = ''.join(map(str,x))
