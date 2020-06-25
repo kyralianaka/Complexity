@@ -20,9 +20,14 @@ def NCD(spike_array,compressor):
     L = len(spike_array)
     hmap = np.zeros([L,L],dtype=np.float32)
 
-    for m in range(len(spike_array)):
-        for n in range(len(spike_array)):
+    #Calculate the pairwise NCDs
+    for m in range(L):
+        for n in range(m+1):
             hmap[n,m] = NCD_pairwise(spike_array[m],spike_array[n],compressor)
+
+    #Mirror array over the diagonal 
+    i_lower = np.tril_indices(L)
+    hmap[i_lower] = np.transpose(hmap)[i_lower]  # make the matrix symmetric
 
     return hmap
 
