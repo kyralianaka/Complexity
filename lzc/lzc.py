@@ -19,6 +19,7 @@ else:
 # path to DLL and argument types
 _lzc = ctypes.CDLL(libpath)
 _lzc.lz_complexity.argtypes = (ndpointer(ctypes.c_int), ctypes.c_int)
+_lzc.lz_complexity2.argtypes = (ndpointer(ctypes.c_int), ctypes.c_int, ctypes.c_int)
 
 def lz_complexity(s):
     global _lzc
@@ -54,3 +55,10 @@ def lz_complexity(s):
 
     return lzc
     """
+def lz_complexity2(s, threshold):
+    global _lzc
+    # coerce input arguments to ctypes
+    s = array(s, dtype=ctypes.c_int)
+    N = ctypes.c_int(len(s))
+    lzc = _lzc.lz_complexity2(s,N,ctypes.c_int(threshold))
+    return lzc

@@ -10,5 +10,6 @@
 #endif
 
 LZCEXPORT int lz_complexity(int *s, int N);
+LZCEXPORT int lz_complexity2(int* s, int N, int threshold);
 
 #endif
