@@ -11,7 +11,7 @@ import pylab
 
 def NCD(spike_array,compressor):
     '''
-    Generates the normalized compression distance matrix of a spike array.
+    Generates the normalized compression distance matrix of a spike array. Assumes that C_xy =~ C_yx.
 
         INPUT: spike_array, numpy array of arrays; compressor
 
@@ -20,10 +20,16 @@ def NCD(spike_array,compressor):
     L = len(spike_array)
     hmap = np.zeros([L,L],dtype=np.float32)
 
+    #Calculate each node's lz_complexity
+    lzcs = np.zeros(L)
+    for i in range(L):
+        lzcs[i] = lzc.lz_complexity(spike_array[i,:])
+
     #Calculate the pairwise NCDs
     for m in range(L):
         for n in range(m+1):
-            hmap[n,m] = NCD_pairwise(spike_array[m],spike_array[n],compressor)
+            xy = np.concatenate((spike_array[m],spike_array[n]))
+            hmap[n,m] = (lzc.lz_complexity(xy)-min(lzcs[m],lzcs[n])/max(lzcs[m],lzcs[n]))
 
     #Mirror array over the diagonal 
     i_lower = np.tril_indices(L)
@@ -34,9 +40,7 @@ def NCD(spike_array,compressor):
 def NCD_pairwise(s1,s2, compressor):
     '''
     Calculates the normalized compression distance between two
-    sequences using the compressor specified. Currently, the gzip compressor is
-    considered the most accurate due to testing of idempotency. Padding the sequence
-    using the gzip compressor may also help.
+    sequences using the compressor specified. 
 
         INPUT:
             s1, s2: numpy arrays, any int dtype acceptable but uint8 recommended
@@ -98,25 +102,6 @@ def NCD_pairwise(s1,s2, compressor):
         C_xy = lzc.lz_complexity(np.concatenate((s1,s2)))
         C_yx = lzc.lz_complexity(np.concatenate((s2,s1)))
         NCD = (np.amin([C_xy,C_yx])-np.amin([C_x, C_y]))/np.amax([C_x, C_y])
-        '''
-        In order to test the least modified form of pppm from the Nayuki project.
-
-        seqs = dict.fromkeys(['x', 'y', 'xy', 'yx'])
-        C = dict.fromkeys(seqs)
-        seqs['x'] = s1.astype(np.uint8)
-        seqs['y'] = s2.astype(np.uint8)
-        seqs['xy'] = np.concatenate((seqs['x'],seqs['y']))
-        seqs['yx'] = np.concatenate((seqs['y'],seqs['x']))
-        for i in seqs:
-            stringi = ''.join(map(str, seqs[i]))
-            filein = open("filein.txt","w")
-            filein.write(stringi)
-            filein.close()
-            ppm_compress_mod2.main("filein.txt","fileout.txt")
-            statinfo1 = os.stat("fileout.txt")
-            C[i] = statinfo1.st_size
-        NCD = (np.amin([C['xy'],C['yx']])-np.amin([C['x'],C['y']]))/np.amax([C['x'],C['y']])
-        '''
     return NCD
 
 def clen(x, compressor):
@@ -153,50 +138,6 @@ def NCD_clusters(NCD_mat):
     return new_mat
 
 
-if __name__ == '__main__':
-    '''
-    #Testing
     
-    sarr = np.random.binomial(1,0.5,size=(16,2000))
+ 
 
-    mat = NCD(sarr,'lz')
-    hm = NCD_clusters(mat)
-    im = plt.matshow(hm,cmap='GnBu')
-    plt.colorbar(im)
-    plt.show()
-
-    x = np.random.binomial(1,0.5,1000)
-    xstr = ''.join(map(str,x))
-    C_x = len(snappy.compress(xstr))
-    y = np.random.binomial(1,0.5,1000)
-    ystr = ''.join(map(str,y))
-    C_y = len(snappy.compress(ystr))
-
-    xy = np.concatenate((x,y))
-    xy = ''.join(map(str,xy))
-    C_xy = len(snappy.compress(xy))
-    yx = np.concatenate((y,x))
-    yx = ''.join(map(str,yx))
-    C_yx = len(snappy.compress(yx))
-
-    xx = np.concatenate((x,x))
-    xx = ''.join(map(str,xx))
-    C_xx = len(snappy.compress(xx))
-
-    yy = np.concatenate((y,y))
-    yy = ''.join(map(str,yy))
-    C_yy = len(snappy.compress(yy))
-
-    NCD_xy = (np.amin([C_xy,C_yx])-np.amin([C_x,C_y]))/np.amax([C_x,C_y])
-    NCD_xx = (C_xx-C_x)/C_x
-    NCD_yy = (C_yy-C_y)/C_y
-    print(NCD_xy, NCD_xx, NCD_yy)
-
-    x = np.random.binomial(1,0.5,1000)
-    lz_x = NCD_pairwise(x,x,'lz')
-    y = np.tile([1,0,1,0],250)
-    lz_y = NCD_pairwise(y,y,'lz')
-    lz_xy = NCD_pairwise(x,y,'lz')
-    lz_yx = NCD_pairwise(y,x,'lz')
-    print(lz_x, lz_y, lz_xy, lz_yx)
-    '''
