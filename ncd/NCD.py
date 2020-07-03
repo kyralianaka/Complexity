@@ -29,7 +29,7 @@ def NCD(spike_array,compressor):
     for m in range(L):
         for n in range(m+1):
             xy = np.concatenate((spike_array[m],spike_array[n]))
-            hmap[n,m] = (lzc.lz_complexity(xy)-min(lzcs[m],lzcs[n])/max(lzcs[m],lzcs[n]))
+            hmap[n,m] = (lzc.lz_complexity(xy)-min(lzcs[m],lzcs[n]))/max(lzcs[m],lzcs[n])
 
     #Mirror array over the diagonal 
     i_lower = np.tril_indices(L)
