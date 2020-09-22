@@ -9,11 +9,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pylab
 
-def NCD(spike_array,compressor):
+def NCD(spike_array,compressor,triu_only=False):
     '''
     Generates the normalized compression distance matrix of a spike array. Assumes that C_xy =~ C_yx.
 
-        INPUT: spike_array, numpy array of arrays; compressor
+        INPUT: spike_array, numpy array of arrays; compressor; triu_only=True to get just the pairwise NCDs 
 
         OUTPUT: hmap, numpy array of arrays
     '''
@@ -31,9 +31,14 @@ def NCD(spike_array,compressor):
             xy = np.concatenate((spike_array[m],spike_array[n]))
             hmap[n,m] = (lzc.lz_complexity(xy)-min(lzcs[m],lzcs[n]))/max(lzcs[m],lzcs[n])
 
-    #Mirror array over the diagonal 
-    i_lower = np.tril_indices(L)
-    hmap[i_lower] = np.transpose(hmap)[i_lower]  # make the matrix symmetric
+    if triu_only==False:
+        #Mirror array over the diagonal 
+        i_lower = np.tril_indices(L)
+        hmap[i_lower] = np.transpose(hmap)[i_lower]  
+    else:
+        #Get the upper triangle NCD values only
+        idxs = np.triu_indices(L,k=1)
+        hmap = hmap[idxs]
 
     return hmap
 
