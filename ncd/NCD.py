@@ -20,16 +20,22 @@ def NCD(spike_array,compressor,triu_only=False):
     L = len(spike_array)
     hmap = np.zeros([L,L],dtype=np.float32)
 
-    #Calculate each node's lz_complexity
-    lzcs = np.zeros(L)
-    for i in range(L):
-        lzcs[i] = lzc.lz_complexity(spike_array[i,:])
+    if compressor == 'lz':
+        #Calculate each node's lz_complexity
+        lzcs = np.zeros(L)
+        for i in range(L):
+            lzcs[i] = lzc.lz_complexity(spike_array[i,:])
 
-    #Calculate the pairwise NCDs
-    for m in range(L):
-        for n in range(m+1):
-            xy = np.concatenate((spike_array[m],spike_array[n]))
-            hmap[n,m] = (lzc.lz_complexity(xy)-min(lzcs[m],lzcs[n]))/max(lzcs[m],lzcs[n])
+        #Calculate the pairwise NCDs
+        for m in range(L):
+            for n in range(m+1):
+                xy = np.concatenate((spike_array[m],spike_array[n]))
+                hmap[n,m] = (lzc.lz_complexity(xy)-min(lzcs[m],lzcs[n]))/max(lzcs[m],lzcs[n])
+    else:
+        #Calculate the pairwise NCDs
+        for m in range(L):
+            for n in range(m+1):
+                hmap[n,m] = NCD_pairwise(spike_array[m],spike_array[n],compressor)
 
     if triu_only==False:
         #Mirror array over the diagonal 
@@ -96,10 +102,14 @@ def NCD_pairwise(s1,s2, compressor):
         y = ''.join(map(str,s2))
         xy = ''.join(map(str, np.concatenate((s1,s2))))
         yx = ''.join(map(str,np.concatenate((s2,s1))))
-        xobj, yobj = ppmc.ppmc(x), ppmc.ppmc(y)
-        xyobj, yxobj = ppmc.ppmc(xy), ppmc.ppmc(yx)
-        C_x, C_y = xobj.compress(), yobj.compress()
-        C_xy, C_yx = xyobj.compress(), yxobj.compress()
+        xobj = ppmc.ppmc(x)
+        yobj = ppmc.ppmc(y)
+        xyobj = ppmc.ppmc(xy)
+        yxobj = ppmc.ppmc(yx)
+        C_x = round(xobj.compress()) 
+        C_y = round(yobj.compress())
+        C_xy = round(xyobj.compress())
+        C_yx = round(yxobj.compress())
         NCD = (np.amin([C_xy,C_yx])-np.amin([C_x, C_y]))/np.amax([C_x, C_y])
     if compressor == 'lz':
         C_x = lzc.lz_complexity(s1)
@@ -141,7 +151,6 @@ def NCD_clusters(NCD_mat):
     new_mat = NCD_mat[leaves,:]
     new_mat = new_mat[:,leaves]   
     return new_mat
-
 
     
  
