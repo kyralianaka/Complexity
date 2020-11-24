@@ -4,7 +4,7 @@ Authors: Kyra L. Kadhim (github.com/kyralianaka), Kevin S. Brown (github.com/the
 
 A python package with multiple methods of calculating the mathematical complexity of
 a sequence of binary integers. These methods include Lempel-Ziv Complexity calculated
-with solely python code, a sub-package for lzc calculation with a C extension that is about
+with solely python code, a sub-package for LZC calculation with a C extension that is about
 50x faster, and a recently developed measure called Effort to Compress published by
 Nithin Nagaraj in 2013.
 
@@ -17,7 +17,7 @@ distance matrix of multiple sequences.
 To calculate the normalized compression distance of sequences, different compressors
 may be used. The compressors supported by NCD.py include gzip, bzip, snappy, ppm
 (prediction by partial matching algorithm developed by [Nayuki](https://github.com/nayuki/Reference-arithmetic-coding)), ppmc, and the LZ Complexity itself substituted for
-the compression value.
+the compressed length.
 
 ## Installation
 
