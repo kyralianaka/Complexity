@@ -60,7 +60,7 @@ import gzip
 from complexity.ncd import NCD
 x = np.tile([1,0,1,0],10)
 y = np.tile([1,1,0,1],10)
-NCD.NCD_pairwaise(x,y,gzip) # returns 0.206
+NCD.NCD_pairwise(x,y,gzip) # returns 0.206
 ```
 
 ## License

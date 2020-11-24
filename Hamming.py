@@ -3,11 +3,12 @@ import matplotlib.pyplot as plt
 import pickle
 
 '''
-This function will calculate the minimum hamming distance between each of the nodes in a 
-network and produce a heat map array. This array can be used to design a figure for 
-illustrating the existence of 3 different network states.
+This function calculates the minimum hamming distance between the 
+sequences in each pair of rows in an array. By minimum, it is meant that
+the number of differences are counted for each possible alignment of each
+pair of sequences. The output is a symmetric matrix of the minimum distances.
 
-    INPUT: s, spike array, numpy int array of arrays
+    INPUT: s, numpy int array of arrays
     
     OUTPUT: hmap, numpy float32 array of arrays
     
@@ -15,21 +16,20 @@ illustrating the existence of 3 different network states.
 
 def Hamming(s):
     
-    #create square array to append hds into
     L = len(s)
-    hmap = np.zeros([L,L],dtype=np.float32) #Make sure making floats default
+    hmap = np.zeros([L,L],dtype=np.float32) 
     
-    for i in range(len(s)): #for every node in spike array s
+    for i in range(len(s)): 
         
         j = i
         while j < len(s):
         
             counters = np.zeros(len(s[0])) 
             
-            "The main loop that compares 2 sequences"
             i_startidx = 0
             j_startidx = 0 #j is the next node in s (s[i+1])
             
+            #main loop that compares 2 sequences
             while j_startidx < len(s[i]):
                 iidx = i_startidx
                 jidx = j_startidx
@@ -50,15 +50,8 @@ def Hamming(s):
     
     return hmap 
 
-if __name__ == '__main__':
-    
-    
-    pickle_in = open('toynet','rb')
-    toy_net = pickle.load(pickle_in)
 
     
-    hm = Hamming(toy_net)
-    im = plt.imshow(hm, cmap='hot', interpolation='none')
-    plt.colorbar(im)
+    
 
 
