@@ -84,4 +84,6 @@ def nlz_complexity(s):
     '''
     Compute the LZC of a sequence as shown above normalized by the random LZC.
     '''
-    return lz_complexity(s)/random_lz_complexity(len(s), sum(s))
+    n = len(s)
+    p = sum(s)/len(s)
+    return lz_complexity(s)/random_lz_complexity(n, p)
