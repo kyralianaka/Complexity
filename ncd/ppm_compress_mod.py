@@ -50,7 +50,7 @@ def makestream(a):
 
 def compress(inp):
     outputstream = io.BytesIO()
-    # From original main function
+    # From original main function, writes bits to another byte stream
     bitout = arithmeticcoding.BitOutputStream(outputstream)
 
     # Set up encoder and model. In this PPM model, symbol 256 represents EOF;
@@ -101,6 +101,7 @@ def encode_symbol(model, history, symbol, enc):
     # Logic for order = -1
     enc.write(model.order_minus1_freqs, symbol)
 
-x = np.random.binomial(1,0.5,2000)
-stream = makestream(x)
-output = compress(stream)
+if __name__ == "__main__":
+    x = np.random.binomial(1,0.5,2000)
+    stream = makestream(x)
+    output = compress(stream)

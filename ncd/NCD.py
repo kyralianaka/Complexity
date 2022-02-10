@@ -55,7 +55,7 @@ def NCD_pairwise(s1,s2, compressor):
 
         INPUT:
             s1, s2: numpy arrays, any int dtype acceptable but uint8 recommended
-            compressor: gzip, bz2, 'gzip_padded'(pads x2), snappy, 'ppm', 'ppmc', 'lz'
+            compressor: gzip, bz2, 'gzip_padded'(pads x2), snappy, 'ppm', 'ppmc', 'lz','nlz'
         OUTPUT:
             NCD: numpy float
 
@@ -64,6 +64,7 @@ def NCD_pairwise(s1,s2, compressor):
     in bits can be found using the function clen below.
     '''
     if compressor in [gzip, bz2, 'gzip_padded']:
+        #compressor.compress returns a bytes object, and len(bytesObject) gives the number of bytes
         if compressor == 'gzip_padded':
             s1 = np.tile(s1,3)
             s2 = np.tile(s2,3)
@@ -76,6 +77,7 @@ def NCD_pairwise(s1,s2, compressor):
         C_yx = len(compressor.compress(yx))
         NCD = (np.amin([C_xy,C_yx])-np.amin([C_x, C_y]))/np.amax([C_x, C_y])
     if compressor == snappy:
+        #snappy.compress() also seems to return a bytes object, so len() returns the number of bytes of the compressed sequence
         s1_str = ''.join(map(str,s1))
         s2_str = ''.join(map(str,s2))
         C_x = len(compressor.compress(s1_str))
@@ -88,10 +90,12 @@ def NCD_pairwise(s1,s2, compressor):
     if compressor == 'ppm':
         s12 = np.concatenate((s1,s2))
         s21 = np.concatenate((s2,s1))
+        #sequences are converted to byte streams and then compressed into other byte streams
         stream1 = ppm_compress_mod.compress(ppm_compress_mod.makestream(s1))
         stream2 = ppm_compress_mod.compress(ppm_compress_mod.makestream(s2))
         stream12 = ppm_compress_mod.compress(ppm_compress_mod.makestream(s12))
         stream21 = ppm_compress_mod.compress(ppm_compress_mod.makestream(s21))
+        #the length of the byte stream/number of bytes in the compressed argument
         C_x = len(stream1.getbuffer())
         C_y = len(stream2.getbuffer())
         C_xy = len(stream12.getbuffer())
@@ -117,6 +121,17 @@ def NCD_pairwise(s1,s2, compressor):
         C_xy = lzc.lz_complexity(np.concatenate((s1,s2)))
         C_yx = lzc.lz_complexity(np.concatenate((s2,s1)))
         NCD = (np.amin([C_xy,C_yx])-np.amin([C_x, C_y]))/np.amax([C_x, C_y])
+    if compressor == 'nlz':
+        xy = np.concatenate((s1,s2))
+        yx = np.concatenate((s2,s1))
+        C_len = np.zeros(4)
+        for i,seq in enumerate([s1,s2,xy,yx]):
+            t = len(seq)
+            p = float(sum(seq))/t
+            h = -p*np.log2(p) - (1-p)*np.log2(1-p)
+            c_st = h*t/np.log2(t)
+            C_len[i] = lzc.lz_complexity(seq)/c_st
+        NCD = (np.amin(C_len[2:])-np.amin(C_len[:2]))/np.amax(C_len[:2])
     return NCD
 
 def clen(x, compressor):
@@ -152,6 +167,10 @@ def NCD_clusters(NCD_mat):
     new_mat = new_mat[:,leaves]   
     return new_mat
 
-    
- 
+if __name__ == "__main__":
+    s1 = np.tile(np.random.binomial(1,0.5,size=10),200)
+    s2 = np.tile(np.random.binomial(1,0.5,size=10),200)
+    val = NCD_pairwise(s1,s2,'ppm')
+    val2 = NCD_pairwise(s1,s2,gzip)
+    print("NCD(x,y): " + str(val))
 
