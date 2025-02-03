@@ -1,5 +1,5 @@
 /*
-This function will calculate the lzc of a sequence probably more quickly than in python
+This function will calculate the lzc of a sequence
     INPUT:
       *s: int array
       N: int, length of int array
@@ -9,12 +9,6 @@ This function will calculate the lzc of a sequence probably more quickly than in
 
 LZCEXPORT int lz_complexity(int *s, int N)
 {
-  /* Need to rebuild array?
-  for (int i = 0; i < N; i++)
-  {
-    int seq = s[i]
-  }
-  */
   int i = 0, k = 1, l = 1;
   int k_max = 1;
   int n = N-1;
@@ -62,14 +56,15 @@ LZCEXPORT int lz_complexity(int *s, int N)
   return lzc;
 }
 
+/*
+This function will calculate the lzc of a sequence but stop iteration if a threshold is reached
+    INPUT:
+      *s: int array
+      N: int, length of int array
+*/
+
 LZCEXPORT int lz_complexity2(int *s, int N, int threshold)
 {
-  /* Need to rebuild array?
-  for (int i = 0; i < N; i++)
-  {
-    int seq = s[i]
-  }
-  */
   int i = 0, k = 1, l = 1;
   int k_max = 1;
   int n = N-1;
@@ -119,7 +114,7 @@ LZCEXPORT int lz_complexity2(int *s, int N, int threshold)
   return lzc;
 }
 
-// Dummy definition to satisfy Microsoft compiler when using the python extension mechanism to build.
+// Dummy definition to satisfy Microsoft compiler when using the Python extension mechanism to build.
 void PyInit_lzc(void)
 {
 

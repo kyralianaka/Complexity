@@ -1,7 +1,8 @@
 import numpy as np
 
+
 def lz_complexity(s):
-    '''
+    """
     Lempel-Ziv complexity as described in Kaspar and Schuster, Phys. Rev. A.
     The input iterable (see below) does not have to be binary (2-element), but
     most applications of LZ complexity have used strings of 0s and 1s.
@@ -10,19 +11,19 @@ def lz_complexity(s):
         s : string, list, or tuple, required
           sequence to calculate complexity for
 
-    '''
-    i = 0 # where we are in the current block
-    k = 1 # current block length
-    k_max = 1 # maximum length of matching block in history
-    l = 1 # where we are in the sequence
-    n = len(s)-1 # length of the sequence
-    lzc = 1 # minimum lzc
+    """
+    i = 0  # where we are in the current block
+    k = 1  # current block length
+    k_max = 1  # maximum length of matching block in history
+    l = 1  # where we are in the sequence
+    n = len(s) - 1  # length of the sequence
+    lzc = 1  # minimum lzc
 
     while True:
         # compare current elements with history
-        if s[i+k-1] == s[l+k-1]:
+        if s[i + k - 1] == s[l + k - 1]:
             # add to the block length if the same
-            k += 1 
+            k += 1
             # check if at the end of the sequence
             if l + k >= n - 1:
                 lzc += 1
@@ -31,12 +32,12 @@ def lz_complexity(s):
             # if the current block length is the largest matching block length
             # in the history, set it to kmax
             if k > k_max:
-               k_max = k
+                k_max = k
             # increment what starting index in the history we are at
             i += 1
             # if we're "starting" at where we are in the sequence, increment
-            # the lzc, add the maximum block length to where we are in the 
-            # sequence and move on 
+            # the lzc, add the maximum block length to where we are in the
+            # sequence and move on
             if i == l:
                 lzc += 1
                 l += k_max
@@ -53,14 +54,16 @@ def lz_complexity(s):
                 k = 1
     return lzc
 
-'''
+
+"""
 This algorithm might be improved by making sure that we don't keep checking the 
 history for a bigger block when we can't get a block any bigger because there 
 isn't enough history (kmax > l-i).
-'''
+"""
+
 
 def random_lz_complexity(n, p=0.5):
-    '''
+    """
     Computes the expected Lempel-Ziv complexity for a random sequence of length
     n and expected probability of generating a 1 = p.  Useful for normalizing
     the raw lz_complexity.  This function will behave poorly if p is identically
@@ -73,17 +76,18 @@ def random_lz_complexity(n, p=0.5):
 
         p : float, optional
           probability of seeing a 1 in the sequence
-    '''
+    """
     # source entropy
-    h = -p*np.log2(p) - (1-p)*np.log2(1-p)
+    h = -p * np.log2(p) - (1 - p) * np.log2(1 - p)
     # expected LZ complexity of binary representations of real numbers
-    bn = n/np.log2(n)
-    return h*bn
+    bn = n / np.log2(n)
+    return h * bn
+
 
 def nlz_complexity(s):
-    '''
+    """
     Compute the LZC of a sequence as shown above normalized by the random LZC.
-    '''
+    """
     n = len(s)
-    p = sum(s)/len(s)
-    return lz_complexity(s)/random_lz_complexity(n, p)
+    p = sum(s) / len(s)
+    return lz_complexity(s) / random_lz_complexity(n, p)

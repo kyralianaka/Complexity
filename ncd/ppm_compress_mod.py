@@ -12,6 +12,7 @@
 import contextlib, sys, io
 from complexity.ncd import arithmeticcoding, ppmmodel
 import numpy as np
+
 python3 = sys.version_info.major >= 3
 
 
@@ -37,13 +38,14 @@ def makestream(inp):
     return stream
 """
 
+
 def makestream(a):
-    '''
+    """
     Accepts a numpy array and produces a string, which is then encoded into a
     byte string.
-    '''
+    """
     byte_stream = io.BytesIO()
-    _ = byte_stream.write(''.join([str(c) for c in a]).encode('ascii'))
+    _ = byte_stream.write("".join([str(c) for c in a]).encode("ascii"))
     byte_stream.seek(0)
     return byte_stream
 
@@ -87,7 +89,7 @@ def encode_symbol(model, history, symbol, enc):
     # context". When symbol 256 is produced at the order -1 context, it means "EOF".
     for order in reversed(range(len(history) + 1)):
         ctx = model.root_context
-        for sym in history[ : order]:
+        for sym in history[:order]:
             assert ctx.subcontexts is not None
             ctx = ctx.subcontexts[sym]
             if ctx is None:
@@ -101,7 +103,8 @@ def encode_symbol(model, history, symbol, enc):
     # Logic for order = -1
     enc.write(model.order_minus1_freqs, symbol)
 
+
 if __name__ == "__main__":
-    x = np.random.binomial(1,0.5,2000)
+    x = np.random.binomial(1, 0.5, 2000)
     stream = makestream(x)
     output = compress(stream)
